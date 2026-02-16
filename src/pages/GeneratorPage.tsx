@@ -19,6 +19,12 @@ type BrandResult = {
   voiceTraits: string[];
   socialPost: string;
   bio: string;
+  strategy?: string;
+  keywords?: string[];
+  logoUrl?: string;
+  moodboardUrl?: string;
+  sentiment?: string;
+  confidence?: number;
 };
 
 const tones = ["Professional", "Playful", "Bold", "Minimalist", "Friendly", "Luxurious"];
@@ -44,36 +50,33 @@ const GeneratorPage = () => {
 
   const generate = async () => {
     setLoading(true);
-    // Simulate AI generation (will be replaced with real AI later)
-    await new Promise((r) => setTimeout(r, 2500));
+    try {
+      // Connect to the backend
+      const response = await fetch('http://localhost:8000/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input)
+      });
 
-    const mockResult: BrandResult = {
-      names: [`${input.keywords.split(",")[0]?.trim() || input.industry}Forge`, `Neo${input.industry.split(" ")[0]}`, `${input.industry.split(" ")[0]}Pulse`],
-      taglines: [
-        `Empowering ${input.audience} with next-gen ${input.industry.toLowerCase()}`,
-        `Where ${input.values.split(",")[0]?.trim().toLowerCase()} meets innovation`,
-        `The future of ${input.industry.toLowerCase()} starts here`,
-      ],
-      description: `A cutting-edge ${input.industry.toLowerCase()} brand built for ${input.audience.toLowerCase()}. We combine ${input.values.toLowerCase()} to deliver exceptional experiences that redefine the industry.`,
-      colors: [
-        { hex: "#00FF88", name: "Electric Mint" },
-        { hex: "#0EA5E9", name: "Sky Circuit" },
-        { hex: "#1A1F3A", name: "Deep Space" },
-        { hex: "#F0F4F8", name: "Cloud White" },
-        { hex: "#6366F1", name: "Indigo Pulse" },
-      ],
-      voiceTraits: [input.tone, "Innovative", "Trustworthy", "Forward-thinking"],
-      socialPost: `🚀 Introducing a new era of ${input.industry.toLowerCase()}. Built for ${input.audience.toLowerCase()} who demand ${input.values.split(",")[0]?.trim().toLowerCase()}. #Innovation #${input.industry.replace(/\s/g, "")}`,
-      bio: `We're on a mission to revolutionize ${input.industry.toLowerCase()} for ${input.audience.toLowerCase()}. Driven by ${input.values.toLowerCase()}.`,
-    };
+      if (!response.ok) {
+        throw new Error('Failed to generate brand');
+      }
 
-    setResult(mockResult);
-    setLoading(false);
+      const backendResult: BrandResult = await response.json();
+      setResult(backendResult);
 
-    // Save to localStorage
-    const saved = JSON.parse(localStorage.getItem("brandforge_projects") || "[]");
-    saved.push({ input, result: mockResult, createdAt: new Date().toISOString() });
-    localStorage.setItem("brandforge_projects", JSON.stringify(saved));
+      // Save to localStorage (optional backup)
+      const saved = JSON.parse(localStorage.getItem("brandforge_projects") || "[]");
+      saved.push({ input, result: backendResult, createdAt: new Date().toISOString() });
+      localStorage.setItem("brandforge_projects", JSON.stringify(saved));
+
+    } catch (error) {
+      console.error("Generation error:", error);
+      // Fallback or alert user
+      alert("Failed to connect to the backend. Ensure the server is running on port 3000.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const copyText = (text: string, id: string) => {
@@ -178,6 +181,49 @@ const GeneratorPage = () => {
                 {copied === "bio" ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy</>}
               </button>
             </ResultCard>
+
+            {/* Strategy */}
+            {result.strategy && (
+              <ResultCard title="Brand Strategy" delay={0.7}>
+                <p className="text-muted-foreground">{result.strategy}</p>
+              </ResultCard>
+            )}
+
+            {/* Visual Identity */}
+            {(result.logoUrl || result.moodboardUrl) && (
+              <ResultCard title="Visual Identity" delay={0.8}>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {result.logoUrl && (
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium text-foreground">Logo Concept</h4>
+                      <img src={result.logoUrl} alt="Generated Logo" className="w-full rounded-lg border border-border bg-white" />
+                    </div>
+                  )}
+                  {result.moodboardUrl && (
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium text-foreground">Mood Board</h4>
+                      <img src={result.moodboardUrl} alt="Mood Board" className="w-full rounded-lg border border-border" />
+                    </div>
+                  )}
+                </div>
+              </ResultCard>
+            )}
+
+            {/* Sentiment Analysis */}
+            {result.sentiment && (
+              <ResultCard title="Tone Analysis (AI)" delay={0.9}>
+                <div className="flex items-center gap-4">
+                  <div className="glass px-4 py-2 rounded-lg text-primary font-semibold border border-primary/20">
+                    {result.sentiment}
+                  </div>
+                  {result.confidence && (
+                    <div className="text-sm text-muted-foreground">
+                      Confidence: {(result.confidence * 100).toFixed(0)}%
+                    </div>
+                  )}
+                </div>
+              </ResultCard>
+            )}
           </div>
 
           <motion.div className="text-center mt-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>

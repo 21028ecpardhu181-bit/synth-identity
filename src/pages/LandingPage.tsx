@@ -66,7 +66,7 @@ const Navbar = () => (
       <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
         <a href="#features" className="hover:text-foreground transition-colors">Features</a>
         <a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a>
-        
+
       </div>
       <Link
         to="/generator"
@@ -230,21 +230,22 @@ const Features = () => (
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {features.map((f, i) => (
-          <motion.div
-            key={f.title}
-            className="card-3d glass rounded-2xl p-6 group cursor-default"
-            variants={scaleIn}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            custom={i}
-          >
-            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${f.gradient} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-500`}>
-              <f.icon className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <h3 className="text-xl font-bold mb-2 text-foreground">{f.title}</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">{f.desc}</p>
-          </motion.div>
+          <Link key={f.title} to={f.title === "Logo Creation" ? "/logo-generator" : "/generator"}>
+            <motion.div
+              className="card-3d glass rounded-2xl p-6 group cursor-pointer h-full"
+              variants={scaleIn}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={i}
+            >
+              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${f.gradient} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-500`}>
+                <f.icon className="w-6 h-6 text-primary-foreground" />
+              </div>
+              <h3 className="text-xl font-bold mb-2 text-foreground">{f.title}</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">{f.desc}</p>
+            </motion.div>
+          </Link>
         ))}
       </div>
     </div>
