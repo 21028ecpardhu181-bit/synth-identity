@@ -19,14 +19,14 @@ const ParticleGrid = () => {
     resize();
     window.addEventListener("resize", resize);
 
-    for (let i = 0; i < 80; i++) {
+    for (let i = 0; i < 60; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.2,
         size: Math.random() * 2 + 0.5,
-        alpha: Math.random() * 0.5 + 0.1,
+        alpha: Math.random() * 0.3 + 0.05,
       });
     }
 
@@ -41,19 +41,18 @@ const ParticleGrid = () => {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(155, 100%, 50%, ${p.alpha})`;
+        ctx.fillStyle = `hsla(185, 80%, 45%, ${p.alpha})`;
         ctx.fill();
 
-        // Connect nearby particles
         for (let j = i + 1; j < particles.length; j++) {
           const dx = p.x - particles[j].x;
           const dy = p.y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 150) {
+          if (dist < 180) {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `hsla(155, 100%, 50%, ${0.08 * (1 - dist / 150)})`;
+            ctx.strokeStyle = `hsla(185, 80%, 45%, ${0.04 * (1 - dist / 180)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -74,7 +73,7 @@ const ParticleGrid = () => {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.6 }}
+      style={{ opacity: 0.4 }}
     />
   );
 };
