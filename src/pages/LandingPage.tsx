@@ -66,7 +66,7 @@ const Navbar = () => (
       <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
         <a href="#features" className="hover:text-foreground transition-colors">Features</a>
         <a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a>
-        <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
+        
       </div>
       <Link
         to="/generator"
@@ -302,102 +302,6 @@ const HowItWorks = () => (
   </section>
 );
 
-/* ─── Pricing ─── */
-const plans = [
-  {
-    name: "Starter",
-    price: "Free",
-    desc: "Try the platform with basic features.",
-    features: ["3 Brand Projects", "Name Generation", "Basic Color Palettes", "Content Templates"],
-    cta: "Get Started",
-    highlight: false,
-  },
-  {
-    name: "Pro",
-    price: "$29",
-    period: "/mo",
-    desc: "Full power for growing brands.",
-    features: ["Unlimited Projects", "Logo Generation", "Sentiment Analysis", "Brand Voice AI", "Export All Assets", "Priority Support"],
-    cta: "Start Pro Trial",
-    highlight: true,
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    desc: "For agencies and large teams.",
-    features: ["Everything in Pro", "Team Collaboration", "API Access", "Custom Models", "White-label Option", "Dedicated Support"],
-    cta: "Contact Sales",
-    highlight: false,
-  },
-];
-
-const Pricing = () => (
-  <section id="pricing" className="py-32 px-6 bg-gradient-section relative overflow-hidden">
-    <FloatingShape className="w-72 h-72 float-3d-delayed top-10 left-10 opacity-20" />
-
-    <div className="max-w-6xl mx-auto relative z-10">
-      <motion.div
-        className="text-center mb-20"
-        variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-      >
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent text-accent-foreground text-xs font-medium mb-4">
-          <Star className="w-3.5 h-3.5" />
-          PRICING
-        </div>
-        <h2 className="text-4xl md:text-6xl font-extrabold text-foreground">
-          Simple, Transparent
-          <br />
-          <span className="text-gradient-cyan">Pricing</span>
-        </h2>
-      </motion.div>
-
-      <div className="grid md:grid-cols-3 gap-6">
-        {plans.map((plan, i) => (
-          <motion.div
-            key={plan.name}
-            className={`card-3d rounded-2xl p-8 ${plan.highlight ? "glass-strong cyan-glow-strong border-2 border-primary/30 scale-105" : "glass"}`}
-            variants={scaleIn}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            custom={i}
-          >
-            {plan.highlight && (
-              <div className="inline-block px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-bold mb-4">
-                MOST POPULAR
-              </div>
-            )}
-            <h3 className="text-xl font-bold text-foreground">{plan.name}</h3>
-            <div className="mt-2 mb-4">
-              <span className="text-4xl font-extrabold text-foreground">{plan.price}</span>
-              {plan.period && <span className="text-muted-foreground text-sm">{plan.period}</span>}
-            </div>
-            <p className="text-sm text-muted-foreground mb-6">{plan.desc}</p>
-            <ul className="space-y-3 mb-8">
-              {plan.features.map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-foreground">
-                  <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <Link
-              to="/generator"
-              className={`block text-center py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
-                plan.highlight
-                  ? "bg-primary text-primary-foreground cyan-glow hover:scale-105"
-                  : "border border-border text-foreground hover:bg-accent hover:text-accent-foreground"
-              }`}
-            >
-              {plan.cta}
-            </Link>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  </section>
-);
-
 /* ─── CTA ─── */
 const CTA = () => (
   <section className="py-32 px-6 relative overflow-hidden">
@@ -437,7 +341,7 @@ const Footer = () => (
       </div>
       <div className="flex items-center gap-6 text-sm text-muted-foreground">
         <a href="#features" className="hover:text-foreground transition-colors">Features</a>
-        <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
+        <span className="flex items-center gap-1"><Shield className="w-3.5 h-3.5" /> Privacy</span>
         <span className="flex items-center gap-1"><Shield className="w-3.5 h-3.5" /> Privacy</span>
         <span className="flex items-center gap-1"><Globe className="w-3.5 h-3.5" /> Terms</span>
       </div>
@@ -453,7 +357,7 @@ const LandingPage = () => (
     <Hero />
     <Features />
     <HowItWorks />
-    <Pricing />
+    <CTA />
     <CTA />
     <Footer />
   </div>
