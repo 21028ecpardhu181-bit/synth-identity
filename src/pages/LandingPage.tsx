@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import ContentForge from "../components/ContentForge";
 import {
   Zap, Palette, Type, Image, FileText, Sparkles,
   ArrowRight, Check, Brain, Wand2, MessageSquare,
@@ -351,6 +352,7 @@ const Footer = () => (
   </footer>
 );
 
+
 /* ─── Page ─── */
 const LandingPage = () => (
   <div className="relative">
@@ -358,7 +360,7 @@ const LandingPage = () => (
     <Hero />
     <Features />
     <HowItWorks />
-    <CTA />
+    <ContentForge />
     <CTA />
     <Footer />
   </div>

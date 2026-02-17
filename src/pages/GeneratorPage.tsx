@@ -25,6 +25,7 @@ type BrandResult = {
   moodboardUrl?: string;
   sentiment?: string;
   confidence?: number;
+  brandStory?: string;
 };
 
 const tones = ["Professional", "Playful", "Bold", "Minimalist", "Friendly", "Luxurious"];
@@ -73,7 +74,7 @@ const GeneratorPage = () => {
     } catch (error) {
       console.error("Generation error:", error);
       // Fallback or alert user
-      alert("Failed to connect to the backend. Ensure the server is running on port 3000.");
+      alert("Failed to connect to the backend. Ensure the server is running on port 8000.");
     } finally {
       setLoading(false);
     }
@@ -109,116 +110,201 @@ const GeneratorPage = () => {
             Your Brand is <span className="text-gradient-neon">Ready</span>
           </motion.h1>
 
-          <div className="space-y-8">
-            {/* Brand Names */}
-            <ResultCard title="Brand Names" delay={0}>
-              <div className="flex flex-wrap gap-3">
-                {result.names.map((n) => (
-                  <button key={n} onClick={() => copyText(n, n)} className="px-4 py-2 glass rounded-lg hover:neon-glow-green transition-all text-lg font-semibold flex items-center gap-2">
-                    {n} {copied === n ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-3 h-3 text-muted-foreground" />}
-                  </button>
-                ))}
-              </div>
-            </ResultCard>
+          <div className="space-y-8 max-w-6xl mx-auto">
 
-            {/* Taglines */}
-            <ResultCard title="Taglines" delay={0.1}>
-              <div className="space-y-3">
-                {result.taglines.map((t, i) => (
-                  <div key={i} onClick={() => copyText(t, `tag-${i}`)} className="p-3 glass rounded-lg cursor-pointer hover:neon-glow-blue transition-all flex justify-between items-center">
-                    <span className="italic text-muted-foreground">"{t}"</span>
-                    {copied === `tag-${i}` ? <Check className="w-4 h-4 text-primary shrink-0" /> : <Copy className="w-3 h-3 text-muted-foreground shrink-0" />}
+            {/* 1. Brand Identity Header Grid */}
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Brand Names (Enhanced) */}
+              <ResultCard title="Brand Names" delay={0.1}>
+                <div className="grid grid-cols-2 gap-3 h-full content-start max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                  {result.names.map((n, i) => (
+                    <button
+                      key={n}
+                      onClick={() => copyText(n, n)}
+                      className="group relative overflow-hidden bg-gradient-to-br from-white/5 to-white/10 hover:from-primary/20 hover:to-purple-500/20 border border-white/10 hover:border-primary/50 text-foreground p-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] flex flex-col items-center justify-center min-h-[100px]"
+                    >
+                      <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-400 group-hover:text-primary transition-colors mb-1">{n}</span>
+                      {copied === n ? <Check className="w-4 h-4 text-green-400 absolute top-2 right-2" /> : <Copy className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 absolute top-2 right-2 transition-opacity" />}
+                    </button>
+                  ))}
+                </div>
+              </ResultCard>
+
+              {/* Color Palette (Enhanced) */}
+              <ResultCard title="Color Palette" delay={0.2}>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 h-full">
+                  {result.colors.map((c, i) => (
+                    <button
+                      key={c.hex + i}
+                      onClick={() => copyText(c.hex, c.hex)}
+                      className="group relative flex flex-col rounded-xl overflow-hidden border border-white/10 transition-all hover:scale-105 shadow-sm"
+                    >
+                      <div
+                        className="flex-1 min-h-[80px] w-full"
+                        style={{ background: c.hex }}
+                      />
+                      <div className="bg-card/50 p-2 text-center backdrop-blur-sm">
+                        <p className="text-xs font-semibold truncate">{c.name}</p>
+                        <p className="text-[10px] text-muted-foreground font-mono uppercase opacity-70 group-hover:opacity-100">{c.hex}</p>
+                      </div>
+                      {copied === c.hex && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                          <Check className="w-6 h-6 text-white drop-shadow-md" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </ResultCard>
+            </div>
+
+            {/* 2. Strategy & Messaging Grid */}
+            <div className="grid lg:grid-cols-3 gap-6">
+
+              {/* Taglines */}
+              <div className="lg:col-span-1">
+                <ResultCard title="Taglines" delay={0.3}>
+                  <div className="space-y-3">
+                    {result.taglines.map((t, i) => (
+                      <div
+                        key={i}
+                        onClick={() => copyText(t, `tag-${i}`)}
+                        className="bg-secondary/20 hover:bg-secondary/40 border-l-4 border-primary p-4 rounded-r-xl cursor-pointer transition-colors relative group"
+                      >
+                        <p className="italic text-lg text-foreground/90 font-serif leading-snug">"{t}"</p>
+                        <span className="text-[10px] text-muted-foreground mt-2 block opacity-0 group-hover:opacity-100 transition-opacity">Click to copy</span>
+                        {copied === `tag-${i}` && <Check className="w-4 h-4 text-primary absolute top-2 right-2" />}
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </ResultCard>
               </div>
-            </ResultCard>
 
-            {/* Colors */}
-            <ResultCard title="Color Palette" delay={0.2}>
-              <div className="flex flex-wrap gap-4">
-                {result.colors.map((c) => (
-                  <button key={c.hex} onClick={() => copyText(c.hex, c.hex)} className="group text-center">
-                    <div className="w-16 h-16 rounded-xl mb-2 border border-border group-hover:scale-110 transition-transform" style={{ background: c.hex }} />
-                    <span className="text-xs text-muted-foreground">{c.name}</span>
-                    <br />
-                    <span className="text-xs font-mono text-muted-foreground">{c.hex}</span>
-                  </button>
-                ))}
+              {/* Social Post Mockup */}
+              <div className="lg:col-span-2">
+                <ResultCard title="Social Media Content" delay={0.4}>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {/* Mockup */}
+                    <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm max-w-sm mx-auto w-full">
+                      <div className="flex items-center gap-3 p-3 border-b border-border/50 bg-muted/20">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-purple-500" />
+                        <div>
+                          <div className="font-bold text-xs">Your Brand</div>
+                          <div className="text-[10px] text-muted-foreground">Sponsored • Just now</div>
+                        </div>
+                      </div>
+                      <div className="p-4 bg-background text-sm leading-relaxed whitespace-pre-wrap font-sans min-h-[120px]">
+                        {result.socialPost}
+                      </div>
+                      <div className="px-4 py-2 bg-muted/30 border-t border-border/50 flex justify-between text-muted-foreground text-xs">
+                        <span>2.4k Likes</span>
+                        <span>42 Comments</span>
+                      </div>
+                      <button
+                        onClick={() => copyText(result.socialPost, "social")}
+                        className="w-full py-2 bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs font-medium flex items-center justify-center gap-2"
+                      >
+                        {copied === "social" ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Copy Caption
+                      </button>
+                    </div>
+
+                    {/* Bio & Voice */}
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="text-sm font-medium text-muted-foreground mb-2">Brand Bio</h4>
+                        <div className="p-3 bg-secondary/20 rounded-lg text-sm leading-relaxed border border-secondary/30 relative group cursor-pointer" onClick={() => copyText(result.bio, "bio")}>
+                          {result.bio}
+                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100">
+                            {copied === "bio" ? <Check className="w-3 h-3 text-primary" /> : <Copy className="w-3 h-3 text-muted-foreground" />}
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-muted-foreground mb-2">Voice Tone</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {result.voiceTraits.map((v) => (
+                            <span key={v} className="px-2.5 py-1 bg-primary/10 border border-primary/20 rounded-md text-xs font-medium text-primary uppercase tracking-wider">{v}</span>
+                          ))}
+                        </div>
+                      </div>
+                      {result.sentiment && (
+                        <div>
+                          <h4 className="text-sm font-medium text-muted-foreground mb-2">AI Sentiment Analysis</h4>
+                          <div className="flex items-center gap-3 p-2 border border-border rounded-lg bg-card/50">
+                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                            <span className="text-sm font-medium">{result.sentiment}</span>
+                            {result.confidence && <span className="text-xs text-muted-foreground ml-auto">{(result.confidence * 100).toFixed(0)}% Match</span>}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </ResultCard>
               </div>
-            </ResultCard>
+            </div>
 
-            {/* Description */}
-            <ResultCard title="Brand Description" delay={0.3}>
-              <p className="text-muted-foreground leading-relaxed">{result.description}</p>
-              <button onClick={() => copyText(result.description, "desc")} className="mt-3 text-sm text-primary flex items-center gap-1 hover:underline">
-                {copied === "desc" ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy</>}
-              </button>
-            </ResultCard>
 
-            {/* Voice */}
-            <ResultCard title="Brand Voice" delay={0.4}>
-              <div className="flex flex-wrap gap-2">
-                {result.voiceTraits.map((v) => (
-                  <span key={v} className="px-3 py-1 glass rounded-full text-sm text-primary">{v}</span>
-                ))}
-              </div>
-            </ResultCard>
 
-            {/* Social Post */}
-            <ResultCard title="Sample Social Post" delay={0.5}>
-              <div className="p-4 glass rounded-lg">
-                <p className="text-muted-foreground text-sm">{result.socialPost}</p>
-              </div>
-              <button onClick={() => copyText(result.socialPost, "social")} className="mt-3 text-sm text-primary flex items-center gap-1 hover:underline">
-                {copied === "social" ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy</>}
-              </button>
-            </ResultCard>
-
-            {/* Bio */}
-            <ResultCard title="Brand Bio" delay={0.6}>
-              <p className="text-muted-foreground">{result.bio}</p>
-              <button onClick={() => copyText(result.bio, "bio")} className="mt-3 text-sm text-primary flex items-center gap-1 hover:underline">
-                {copied === "bio" ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy</>}
-              </button>
-            </ResultCard>
-
-            {/* Strategy */}
-            {result.strategy && (
-              <ResultCard title="Brand Strategy" delay={0.7}>
-                <p className="text-muted-foreground">{result.strategy}</p>
+            {/* Brand Story */}
+            {result.brandStory && (
+              <ResultCard title="Brand Vision & Story" delay={0.5}>
+                <div className="relative group cursor-pointer" onClick={() => copyText(result.brandStory || "", "story")}>
+                  <p className="text-lg leading-relaxed text-muted-foreground font-light italic border-l-4 border-primary/50 pl-6 py-2">
+                    "{result.brandStory}"
+                  </p>
+                  <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {copied === "story" ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 text-muted-foreground" />}
+                  </div>
+                </div>
               </ResultCard>
             )}
 
-            {/* Visual Identity */}
+            {/* 3. Visual Identity (Large) */}
             {(result.logoUrl || result.moodboardUrl) && (
-              <ResultCard title="Visual Identity" delay={0.8}>
-                <div className="grid md:grid-cols-2 gap-4">
+              <ResultCard title="Visual Identity System" delay={0.6}>
+                <div className="grid md:grid-cols-5 gap-6">
+                  {/* Logo - Takes 2 cols */}
                   {result.logoUrl && (
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-foreground">Logo Concept</h4>
-                      <img src={result.logoUrl} alt="Generated Logo" className="w-full rounded-lg border border-border bg-white" />
+                    <div className="md:col-span-2 space-y-3 group">
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-sm font-medium text-muted-foreground">Logo Concept</h4>
+                        <a href={result.logoUrl} download="logo-concept.png" target="_blank" rel="noreferrer" className="text-xs flex items-center gap-1 text-primary hover:underline"><Download className="w-3 h-3" /> Save</a>
+                      </div>
+                      <div className="relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm aspect-square flex items-center justify-center p-8 group-hover:shadow-md transition-shadow">
+                        <img src={result.logoUrl} alt="Generated Logo" className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500" />
+                      </div>
                     </div>
                   )}
+
+                  {/* Moodboard - Takes 3 cols */}
                   {result.moodboardUrl && (
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-foreground">Mood Board</h4>
-                      <img src={result.moodboardUrl} alt="Mood Board" className="w-full rounded-lg border border-border" />
+                    <div className="md:col-span-3 space-y-3 group">
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-sm font-medium text-muted-foreground">Brand Mood Board</h4>
+                        <a href={result.moodboardUrl} download="moodboard.png" target="_blank" rel="noreferrer" className="text-xs flex items-center gap-1 text-primary hover:underline"><Download className="w-3 h-3" /> Save</a>
+                      </div>
+                      <div className="relative overflow-hidden rounded-2xl border border-border bg-black/5 shadow-sm h-full min-h-[300px] group-hover:shadow-md transition-shadow">
+                        <img src={result.moodboardUrl} alt="Mood Board" className="w-full h-full object-cover transform group-hover:scale-[1.02] transition-transform duration-500" />
+                      </div>
                     </div>
                   )}
                 </div>
               </ResultCard>
             )}
 
-            {/* Sentiment Analysis */}
-            {result.sentiment && (
-              <ResultCard title="Tone Analysis (AI)" delay={0.9}>
-                <div className="flex items-center gap-4">
-                  <div className="glass px-4 py-2 rounded-lg text-primary font-semibold border border-primary/20">
-                    {result.sentiment}
+            {/* 4. Strategy Full Width */}
+            {result.strategy && (
+              <ResultCard title="Strategic Positioning" delay={0.7}>
+                <div className="p-6 bg-gradient-to-tr from-secondary/10 to-transparent border border-border rounded-xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-3 opacity-10">
+                    <svg width="100" height="100" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z" /></svg>
                   </div>
-                  {result.confidence && (
-                    <div className="text-sm text-muted-foreground">
-                      Confidence: {(result.confidence * 100).toFixed(0)}%
+                  <p className="text-lg leading-relaxed text-foreground/90 font-light relative z-10">{result.strategy}</p>
+                  {result.keywords && (
+                    <div className="mt-4 flex flex-wrap gap-2 relative z-10">
+                      {result.keywords.map(k => (
+                        <span key={k} className="text-xs font-mono text-primary/70 bg-primary/5 px-2 py-1 rounded">#{k}</span>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -242,7 +328,7 @@ const GeneratorPage = () => {
             </button>
           </motion.div>
         </div>
-      </div>
+      </div >
     );
   }
 

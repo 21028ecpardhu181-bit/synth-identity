@@ -9,6 +9,8 @@ import GeneratorPage from "./pages/GeneratorPage";
 import LogoGenerator from "./pages/LogoGenerator";
 import NotFound from "./pages/NotFound";
 
+import ChatBot from "./components/ChatBot";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -17,6 +19,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <ParticleGrid />
+      <ChatBot />
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/" element={<LandingPage />} />

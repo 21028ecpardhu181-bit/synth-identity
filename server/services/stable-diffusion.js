@@ -2,19 +2,24 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
+// Load .env explicitly for local testing of this service file
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
 class StableDiffusionService {
     constructor() {
         this.apiKey = process.env.STABLE_DIFFUSION_API_KEY;
-        this.engineId = 'stable-diffusion-v1-6';
+        this.engineId = 'stable-diffusion-xl-1024-v1-0';
         this.apiHost = 'https://api.stability.ai';
     }
 
     async generateBrandVisuals(input) {
         if (!this.apiKey) {
-            console.warn('Stable Diffusion API key missing.');
+            console.warn('Stable Diffusion API key missing. Using Pollinations.ai fallback.');
+            const logoPrompt = `Minimalist Logo for ${input.industry}, ${input.values}, simple, vector style, white background`;
+            const moodPrompt = `Mood board for ${input.industry}, ${input.tone}`;
             return {
-                logoUrl: "https://placehold.co/400x400/1A1F3A/00FF88?text=Future+Brand",
-                moodboard: "https://placehold.co/800x400/0F172A/0EA5E9?text=Brand+Mood"
+                logoUrl: `https://image.pollinations.ai/prompt/${encodeURIComponent(logoPrompt)}?width=1024&height=1024&nologo=true`,
+                moodboardUrl: `https://image.pollinations.ai/prompt/${encodeURIComponent(moodPrompt)}?width=1024&height=1024&nologo=true`
             };
         }
 
@@ -30,10 +35,12 @@ class StableDiffusionService {
             };
 
         } catch (error) {
-            console.error('Error generating visuals with Stable Diffusion:', error.response ? error.response.data : error.message);
+            console.error('Error with Stability AI, falling back to Pollinations:', error.message);
+            const logoPrompt = `Minimalist Logo for ${input.industry}, ${input.values}`;
+            const moodPrompt = `Mood board for ${input.industry}`;
             return {
-                logoUrl: "https://placehold.co/400x400/1A1F3A/00FF88?text=Gen+Failed",
-                moodboard: "https://placehold.co/800x400/0F172A/0EA5E9?text=Gen+Failed"
+                logoUrl: `https://image.pollinations.ai/prompt/${encodeURIComponent(logoPrompt)}?width=1024&height=1024&nologo=true`,
+                moodboardUrl: `https://image.pollinations.ai/prompt/${encodeURIComponent(moodPrompt)}?width=1024&height=1024&nologo=true`
             };
         }
     }
@@ -44,8 +51,8 @@ class StableDiffusionService {
             {
                 text_prompts: [{ text: prompt }],
                 cfg_scale: 7,
-                height: 512,
-                width: 512,
+                height: 1024,
+                width: 1024,
                 samples: 1,
                 steps: 30,
             },
